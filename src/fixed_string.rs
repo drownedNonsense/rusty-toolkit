@@ -15,7 +15,7 @@
 // D E F I N I T I O N S
 //#######################
 
-    #[derive(Default, Hash, PartialEq, Eq)]
+    #[derive(Hash, PartialEq, Eq)]
     /// A fixed sized string equivalent.
     pub struct FixedStr<CAPACITY: Capacity<u8>> {
         array: CAPACITY::Array,
@@ -27,9 +27,17 @@
 // I M P L E M E N T A T I O N S
 //###############################
 
+    impl<CAPACITY: Capacity<u8>> Default for FixedStr<CAPACITY> {
+        fn default() -> Self {
+            FixedStr {
+                array: CAPACITY::uninit(),
+                len:   0u8
+            } // FixedStr ..
+        } // fn ..
+    } // impl ..
 
-    impl<CAPACITY: Capacity<u8> + Default> AsRef<str> for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+
+    impl<CAPACITY: Capacity<u8>> AsRef<str> for FixedStr<CAPACITY> {
         fn as_ref(&self) -> &str {
             
             &str::from_utf8(&self.as_bytes()).unwrap()
@@ -38,16 +46,14 @@
     } // impl AsRef ..
 
 
-    impl<CAPACITY: Capacity<u8> + Default> Deref for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8>> Deref for FixedStr<CAPACITY> {
 
         type Target = str;
         fn deref(&self) -> &Self::Target { self.as_ref() }
     } // impl Deref ..
 
 
-    impl<CAPACITY: Capacity<u8> + Default> FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8>> FixedStr<CAPACITY> {
 
         /// Converts a fixed string to an array of bytes.
         pub fn as_bytes(&self)         -> &[u8]    { &CAPACITY::slice(&self.array)[0usize..self.len as usize] }
@@ -80,14 +86,12 @@
     } // impl FixedStr
 
 
-    impl<CAPACITY: Capacity<u8> + Default> From<&str> for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8> + Default> From<&str> for FixedStr<CAPACITY> {
         fn from(string: &str) -> Self { unsafe { Self::from_str_unchecked(string) }}
     } // impl From ..
 
 
-    impl<CAPACITY: Capacity<u8> + Default> TryFrom<&String> for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8> + Default> TryFrom<&String> for FixedStr<CAPACITY> {
 
         type Error = String;
         fn try_from(string: &String) -> Result<Self, Self::Error> {
@@ -101,19 +105,17 @@
     } // impl From ..
 
 
-    impl<CAPACITY: Capacity<u8> + Default> Display for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8> + Default> Display for FixedStr<CAPACITY> {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "{}", &*self)
+            write!(f, "{}", self.as_ref())
         } // fn fmt()
     } // impl Display ..
 
 
-    impl<CAPACITY: Capacity<u8> + Default> Debug for FixedStr<CAPACITY>
-    where <CAPACITY as Capacity<u8>>::Array: Default {
+    impl<CAPACITY: Capacity<u8> + Default> Debug for FixedStr<CAPACITY> {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.debug_struct("FixedStr")
-                .field("str", &*self)
+                .field("str", &self.as_ref())
                 .field("capacity", &CAPACITY::LEN)
                 .finish()
         } // fn fmt()

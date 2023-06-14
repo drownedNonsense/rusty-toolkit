@@ -104,6 +104,7 @@
         const LEN: usize;
         type Array;
         
+        fn uninit()                           -> Self::Array;
         fn slice(array: &Self::Array)         -> &[T];
         fn slice_mut(array: &mut Self::Array) -> &mut[T];
 
@@ -137,10 +138,9 @@
         + Clone {}
 
 
-    impl<T> Capacity<T> for L8   { const LEN: usize = 8usize;   type Array = [T; 8usize];   fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    impl<T> Capacity<T> for L16  { const LEN: usize = 16usize;  type Array = [T; 16usize];  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    impl<T> Capacity<T> for L32  { const LEN: usize = 32usize;  type Array = [T; 32usize];  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    impl<T> Capacity<T> for L64  { const LEN: usize = 64usize;  type Array = [T; 64usize];  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    impl<T> Capacity<T> for L128 { const LEN: usize = 128usize; type Array = [T; 128usize]; fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    impl<T> Capacity<T> for L256 { const LEN: usize = 256usize; type Array = [T; 256usize]; fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
-    
+    impl<T: Copy + Default> Capacity<T> for L8   { const LEN: usize = 8usize;   type Array = [T; 8usize];   fn uninit() -> Self::Array { [T::default(); 8usize] }   fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
+    impl<T: Copy + Default> Capacity<T> for L16  { const LEN: usize = 16usize;  type Array = [T; 16usize];  fn uninit() -> Self::Array { [T::default(); 16usize] }  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
+    impl<T: Copy + Default> Capacity<T> for L32  { const LEN: usize = 32usize;  type Array = [T; 32usize];  fn uninit() -> Self::Array { [T::default(); 32usize] }  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
+    impl<T: Copy + Default> Capacity<T> for L64  { const LEN: usize = 64usize;  type Array = [T; 64usize];  fn uninit() -> Self::Array { [T::default(); 64usize] }  fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
+    impl<T: Copy + Default> Capacity<T> for L128 { const LEN: usize = 128usize; type Array = [T; 128usize]; fn uninit() -> Self::Array { [T::default(); 128usize] } fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
+    impl<T: Copy + Default> Capacity<T> for L256 { const LEN: usize = 256usize; type Array = [T; 256usize]; fn uninit() -> Self::Array { [T::default(); 256usize] } fn slice(array: &Self::Array) -> &[T] { array } fn slice_mut(array: &mut Self::Array) -> &mut[T] { array }}
