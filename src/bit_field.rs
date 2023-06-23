@@ -91,12 +91,12 @@
         + Clone {}
 
         
-    #[derive(Default)] pub struct L8;
-    #[derive(Default)] pub struct L16;
-    #[derive(Default)] pub struct L32;
-    #[derive(Default)] pub struct L64;
-    #[derive(Default)] pub struct L128;
-    #[derive(Default)] pub struct L256;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L8;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L16;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L32;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L64;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L128;
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)] pub struct L256;
 
 
     pub trait Capacity<T> {

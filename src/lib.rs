@@ -12,4 +12,5 @@
     pub use fixed_string::FixedStr;
     pub use wrapping_conversion::{WrappingInto, WrappingFrom};
     pub use rand_bit_sequence::RandBitSequence;
+    pub use lexing::{Lexer, LexingErr, Token, ReadToken};
     

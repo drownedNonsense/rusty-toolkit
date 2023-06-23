@@ -15,7 +15,7 @@
 // D E F I N I T I O N S
 //#######################
 
-    #[derive(Hash, PartialEq, Eq)]
+    #[derive(Hash, PartialEq, Eq, Clone)]
     /// A fixed sized string equivalent.
     pub struct FixedStr<CAPACITY: Capacity<u8>> {
         array: CAPACITY::Array,
