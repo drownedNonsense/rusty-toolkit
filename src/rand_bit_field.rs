@@ -12,25 +12,25 @@
 //#######################
 
     /// A thread of pseudo-random bit sequences.
-    pub struct RandBitSequence<B: BitField> {
+    pub struct RandBitField<B: BitField> {
         sequence: (B, B),
         index:    u8,
-    } // struct RandBitSequence
+    } // struct ..
 
 
 //###############################
 // I M P L E M E N T A T I O N S
 //###############################
 
-    impl<B: BitField> RandBitSequence<B> {
+    impl<B: BitField> RandBitField<B> {
 
         /// Instantiates a new RBS thread.
         pub fn new(seed: (B, B)) -> Self {
-            RandBitSequence {
+            RandBitField {
                 sequence: seed,
                 index:    0u8,
-            } // RandBitSequence
-        } // fn new()
+            } // RandBitField
+        } // fn ..
 
 
         /// Generates a pseudo-random bit sequence.
@@ -46,7 +46,7 @@
 
             self.sequence.0
 
-        } // fn generate_raw()
+        } // fn ..
 
 
         /// Generates a pseudo-random bit sequence as a `T` bit field.
@@ -72,14 +72,14 @@
             
             start + self.generate() % (end + T::HEAD_BIT - start)
 
-        } // fn generate_irange()
-    } // impl RandBitSequence
+        } // fn ..
+    } // impl ..
 
 
-    impl<B: BitField> Default for RandBitSequence<B>
+    impl<B: BitField> Default for RandBitField<B>
     where B: WrappingFrom<u128>, u128: From<B> {
         fn default() -> Self {
-            RandBitSequence::new((
+            RandBitField::new((
                 B::MAX,
                 B::wrapping_from(
                     std::time::SystemTime::now()
@@ -87,5 +87,5 @@
                         .expect("Could not get UNIX time!")
                         .as_millis()) // wrapping_from()
             )) // new()
-        } // fn default()
-    } // impl Default ..
+        } // fn ..
+    } // impl ..

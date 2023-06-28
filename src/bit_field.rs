@@ -3,6 +3,7 @@
 //#########################
 
     use std::hash::Hash;
+    use std::fmt::{LowerHex, UpperHex};
     use std::ops::{
         BitAnd, BitAndAssign,
         BitOr,  BitOrAssign,
@@ -30,7 +31,9 @@
         + Shl<Self, Output=Self> + ShlAssign<Self>
         + Shr<Self, Output=Self> + ShrAssign<Self>
         + Shl<u8,   Output=Self> + ShlAssign<u8>
-        + Shr<u8,   Output=Self> + ShrAssign<u8> {
+        + Shr<u8,   Output=Self> + ShrAssign<u8>
+        + Sub<Self, Output=Self>
+        + LowerHex + UpperHex {
 
         const MIN:      Self;
         const MAX:      Self;
@@ -43,12 +46,10 @@
         fn bit(n: impl Into<u8>) -> Self { Self::HEAD_BIT << n.into() }
 
         /// Returns a bit field with the `n` first bits enabled.
-        fn bits(n: impl Into<u8>) -> Self
-        where Self: Sub<Self, Output=Self> { Self::bit(n) - Self::HEAD_BIT }
+        fn bits(n: impl Into<u8>) -> Self { Self::bit(n) - Self::HEAD_BIT }
 
         /// Returns a bit mask inside `range`'s bounds.
-        fn bit_mask(range: impl RangeBounds<u8>) -> Self
-        where Self: Sub<Self, Output=Self> {
+        fn bit_mask(range: impl RangeBounds<u8>) -> Self {
             let start = match range.start_bound() {
                 Bound::Included(start) => *start,
                 Bound::Excluded(start) => *start + 1u8,
@@ -63,17 +64,20 @@
         } // fn bit_mask()
 
 
-        /// Returns `true` if the `n`th bit is enabled.
-        fn get_bit(&self, n: impl Into<u8>) -> bool { *self & Self::bit(n) == Self::HEAD_BIT }
+        /// Returns the `n`th bit.
+        fn get_bit(&self, n: impl Into<u8>) -> Self { *self & Self::bit(n) }
 
         /// Returns the `n` first bits.
-        fn get_n_bits(&self, n: impl Into<u8>) -> Self
-        where Self: Sub<Self, Output=Self> { *self & Self::bits(n) }
+        fn get_n_bits(&self, n: impl Into<u8>) -> Self { *self & Self::bits(n) }
 
+        /// Returns `true` when the field has the `n`th bit enabled.
+        fn has_bit(&self, n: impl Into<u8>) -> bool { let bit = Self::bit(n); *self & bit == bit }
+
+        /// Returns `true` when the field has all of the mask's bits enabled.
+        fn has_bits(&self, mask: Self) -> bool { *self & mask == mask }
 
         /// Returns a sub bit field inside `range`'s bounds.
-        fn get_range(&self, range: impl RangeBounds<u8> + Clone) -> Self
-        where Self: Sub<Self, Output=Self> {
+        fn get_range(&self, range: impl RangeBounds<u8> + Clone) -> Self {
             (*self & Self::bit_mask(range.clone())) >> match range.start_bound() {
                 Bound::Included(start) => *start,
                 Bound::Excluded(start) => *start + 1u8,
