@@ -43,13 +43,28 @@
         
 
         /// Returns a bit field with the `n`th bit enabled.
-        fn bit(n: impl Into<u8>) -> Self { Self::HEAD_BIT << n.into() }
+        fn nth_bit(n: impl Into<u8>) -> Self { Self::HEAD_BIT << n.into() }
 
         /// Returns a bit field with the `n` first bits enabled.
-        fn bits(n: impl Into<u8>) -> Self { Self::bit(n) - Self::HEAD_BIT }
+        fn n_bits(n: impl Into<u8>) -> Self { Self::nth_bit(n) - Self::HEAD_BIT }
+
+        /// Sets the `n`th bit on the bit field
+        fn set_nth_bit(&mut self, n: impl Into<u8>) { self.set_bits(Self::n_bits(n)) }
+
+        /// Sets the given bits on the bit field
+        fn set_bits(&mut self, x: Self) { *self |= x }
+
+        /// Unsets the `n`th bit on the bit field
+        fn unset_nth_bit(&mut self, n: impl Into<u8>) { self.unset_bits(Self::n_bits(n)) }
+
+        /// Unsets the given bits on the bit field
+        fn unset_bits(&mut self, x: Self) { *self &= !x }
+
+        /// Returns `true` when the bit field has the `x` bits enabled
+        fn has_bits(&self, x: Self) -> bool { *self & x == x }
 
         /// Returns a bit mask inside `range`'s bounds.
-        fn bit_mask(range: impl RangeBounds<u8>) -> Self {
+        fn range_bit_mask(range: impl RangeBounds<u8>) -> Self {
             let start = match range.start_bound() {
                 Bound::Included(start) => *start,
                 Bound::Excluded(start) => *start + 1u8,
@@ -60,31 +75,18 @@
                 Bound::Excluded(end) => *end - 1u8,
                 Bound::Unbounded     =>  255u8,
             }; // let ..
-            (Self::bit(end - start) - Self::HEAD_BIT) << start
-        } // fn bit_mask()
-
-
-        /// Returns the `n`th bit.
-        fn get_bit(&self, n: impl Into<u8>) -> Self { *self & Self::bit(n) }
-
-        /// Returns the `n` first bits.
-        fn get_n_bits(&self, n: impl Into<u8>) -> Self { *self & Self::bits(n) }
-
-        /// Returns `true` when the field has the `n`th bit enabled.
-        fn has_bit(&self, n: impl Into<u8>) -> bool { let bit = Self::bit(n); *self & bit == bit }
-
-        /// Returns `true` when the field has all of the mask's bits enabled.
-        fn has_bits(&self, mask: Self) -> bool { *self & mask == mask }
+            Self::n_bits(end - start) << start
+        } // fn ..
 
         /// Returns a sub bit field inside `range`'s bounds.
         fn get_range(&self, range: impl RangeBounds<u8> + Clone) -> Self {
-            (*self & Self::bit_mask(range.clone())) >> match range.start_bound() {
+            (*self & Self::range_bit_mask(range.clone())) >> match range.start_bound() {
                 Bound::Included(start) => *start,
                 Bound::Excluded(start) => *start + 1u8,
                 Bound::Unbounded       =>  0u8,
             } // match ..
-        } // fn get_range()
-    } // trait BitField
+        } // fn ..
+    } // trait ..
 
 
     pub trait Static:
@@ -112,7 +114,7 @@
         fn slice(array: &Self::Array)         -> &[T];
         fn slice_mut(array: &mut Self::Array) -> &mut[T];
 
-    } // trait Capacity
+    } // trait ..
 
 
 //###############################

@@ -19,7 +19,7 @@
         fn wrapping_into(self) -> INTO {
             match INTO::BITS > Self::BITS {
                 true  => unsafe { INTO::try_from(self).unwrap_unchecked() },
-                false => unsafe { INTO::try_from(self.get_n_bits(INTO::BITS)).unwrap_unchecked() }
+                false => unsafe { INTO::try_from(self & Self::n_bits(INTO::BITS)).unwrap_unchecked() }
             } // match ..
         } // fn wrapping_into()
     } // trait WrappingInto
